@@ -1,8 +1,10 @@
 # Python
 __pycache__/
+__pycache__
 *.pyc
 *.pyo
 .venv/
+.venv
 
 # OS
 .DS_Store
@@ -17,3 +19,5 @@ tempCodeRunnerFile.*
 materials
 quiz
 *_Solutions.ipynb
+*_Excercise.ipynb
+# exercises
