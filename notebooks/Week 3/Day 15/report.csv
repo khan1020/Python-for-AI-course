@@ -1,0 +1,13 @@
+student_id,name,city,maths,english,science,total,average,result
+1,Ali,Lahore,80,72,91,243,81.0,Pass
+2,Sara,Karachi,65,88,70,223,74.3,Pass
+3,Hassan,Lahore,95,60,84,239,79.7,Pass
+4,Ayesha,Islamabad,72,76,78,226,75.3,Pass
+5,Bilal,Karachi,55,64,58,177,59.0,Fail
+6,Fatima,Lahore,88,91,95,274,91.3,Pass
+7,Usman,Islamabad,66,58,62,186,62.0,Pass
+8,Zainab,Karachi,92,85,89,266,88.7,Pass
+9,Hamza,Lahore,45,50,48,143,47.7,Fail
+10,Maryam,Islamabad,78,80,74,232,77.3,Pass
+11,Imran,Karachi,70,68,72,210,70.0,Pass
+12,Hira,Islamabad,85,90,88,263,87.7,Pass
