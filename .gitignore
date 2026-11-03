@@ -24,3 +24,4 @@ quiz
 # pattern
 *_Notes.md
 *_Explained.md
+*.env
