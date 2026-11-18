@@ -75,3 +75,12 @@ def append_messages(session_id, messages):
         )
 
 
+def delete_messages(session_id):
+    """Delete all stored messages for a conversation; safe to call repeatedly."""
+    with closing(connect()) as connection, connection:
+        cursor = connection.execute(
+            "DELETE FROM messages WHERE session_id = ?", (session_id,)
+        )
+    return cursor.rowcount
+
+

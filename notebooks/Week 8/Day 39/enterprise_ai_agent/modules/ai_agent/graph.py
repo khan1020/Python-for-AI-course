@@ -24,11 +24,15 @@ LLMS = {
         base_url="https://api.groq.com/openai/v1",
         api_key=os.getenv("GROQ_API_KEY"),
         model=os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")),
+    "openrouter": dict(
+        base_url="https://openrouter.ai/api/v1",
+        api_key=os.getenv("OPENROUTER_API_KEY"),
+        model=os.getenv("CHAT_MODEL", "openrouter/free")),
 }
 
 
 def create_chat_model(llm="ollama"):
-    return ChatOpenAI(**LLMS[llm], temperature=0)
+    return ChatOpenAI(**LLMS[llm], temperature=0, extra_body={"max_tokens": 2048})
 
 
 def build_graph(llm="ollama", model=None, tools=None):

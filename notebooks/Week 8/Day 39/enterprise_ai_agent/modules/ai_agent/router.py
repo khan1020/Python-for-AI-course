@@ -12,3 +12,8 @@ def initiate_chat(payload: chat_payload):
 @ai_agent_router.get("/history")
 def get_history(session_id: str):
     return {"session_id": session_id, "messages": service.get_history(session_id)}
+
+@ai_agent_router.delete("/history")
+def delete_history(session_id: str):
+    deleted = service.delete_history(session_id)
+    return {"session_id": session_id, "deleted": deleted}

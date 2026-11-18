@@ -1,9 +1,10 @@
 """Load history -> run graph -> save new messages."""
+import os
 from langchain_core.messages import HumanMessage
 from core.database import sqlite
 from modules.ai_agent.supervisor import build_supervisor
 
-graph = build_supervisor("groq")   # or "ollama", or graph.build_graph("ollama") for one agent
+graph = build_supervisor(os.getenv("LLM_PROVIDER", "openrouter"))
 
 
 def chat(query, session_id):
@@ -38,3 +39,7 @@ def get_history(session_id):
         if item != (shown[-1] if shown else None):   # supervisor repeats the worker's answer
             shown.append(item)
     return shown
+
+
+def delete_history(session_id):
+    return sqlite.delete_messages(session_id)
