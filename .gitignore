@@ -24,7 +24,17 @@ quiz
 # pattern
 *_Notes.md
 *_Explained.md
-*.env
+*.env*
 class
 company_db
 chroma*
+.agents
+
+# Node / Web
+node_modules/
+.next/
+out/
+dist/
+next-env.d.ts
+
+

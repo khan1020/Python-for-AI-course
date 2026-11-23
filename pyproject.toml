@@ -1,0 +1,20 @@
+[project]
+name = "ashrei-tech"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "khan1020", email = "afzalkhanrind92@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = []
+
+[project.scripts]
+ashrei-tech = "ashrei_tech:main"
+
+
+[tool.uv.workspace]
+members = [
+    "projects/project_2_ai_agent",
+    "projects/project_2_ai_agent/project",
+]
