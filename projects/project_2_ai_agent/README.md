@@ -1,19 +1,82 @@
-# Project 2: Enterprise AI Agent
+# Project 2: Enterprise Autonomous AI Software Development Team
 
-An enterprise-ready AI multi-agent system built using LangChain, LangGraph Supervisor, and FastAPI.
+An enterprise multi-agent software engineering team backend built with FastAPI, LangGraph Supervisor, and PostgreSQL (SQLModel + Psycopg).
 
-## Architecture
+---
 
-- **Supervisor Agent**: Orchestrates task routing, decomposition, and coordination between specialized sub-agents.
-- **Knowledge Base Module**: Handles document indexing, vector store retrieval, and domain context enrichment.
-- **AI Team**: Defines team graph topologies and agent tools.
+## 🏗️ Architecture & Workflow
 
-## Setup & Running
+```text
+User asks ──► Planner ──► Developer ──► Reviewer
+                ▲              │
+                └── fix it ◄───┘ (up to 3 tries)
+                │
+             APPROVED
+                ▼
+      Save ONE row in "runs" (PostgreSQL)
+                ▼
+      Send the row back to user / Download as .zip
+```
 
+### Agents & Tool Access Matrix
+| Agent | `list_files` | `read_file` | `write_file` | Role |
+| :--- | :---: | :---: | :---: | :--- |
+| **Planner** | ✅ | ✅ | ❌ | Breaks down requirements and creates file architecture plan |
+| **Developer** | ✅ | ✅ | ✅ | Implements files into the virtual in-memory filesystem |
+| **Reviewer** | ✅ | ✅ | ❌ | Inspects code quality, requests fixes or replies `APPROVED` |
+
+---
+
+## 📁 Project Structure
+
+```text
+projects/project_2_ai_agent/
+├── core/
+│   ├── settings.py           # Pydantic configuration & env loading
+│   └── database/
+│       └── postgres.py       # SQLModel Run table and engine()
+├── modules/
+│   └── ai_agent/
+│       ├── tools.py          # Virtual filesystem: list_files, read_file, write_file
+│       ├── graph.py          # build_team(): supervisor + planner + developer + reviewer
+│       ├── service.py        # Brain: chat(), summarize(), to_response(), download_run()
+│       └── router.py         # Endpoints: /ai/runs/chat, /ai/runs/{id}, /ai/runs/{id}/download
+├── .env.example              # Environment variables template
+├── main.py                   # FastAPI application with X-API-KEY header security
+├── pyproject.toml            # Project dependencies
+└── README.md
+```
+
+---
+
+## 🚀 Setup & Installation
+
+### 1. Configure Environment
+Copy `.env.example` to `.env`:
 ```bash
-# Install dependencies with uv
-uv sync
+cp .env.example .env
+```
+Ensure your `DATABASE_URL` is set:
+```env
+DATABASE_URL=postgresql+psycopg://postgres:yourpassword@localhost:5432/yourdbname
+OPENAI_API_KEY=your_key_here
+```
 
-# Run the agent application
+### 2. Install Dependencies
+```bash
+uv sync
+```
+
+### 3. Run Server
+```bash
 uv run python main.py
 ```
+API Documentation will be available at [http://localhost:8000/docs](http://localhost:8000/docs).
+
+---
+
+## 📡 API Endpoints
+
+- `POST /ai/runs/chat`: Run multi-agent team to generate project files.
+- `GET /ai/runs/{run_id}`: Fetch saved run details and generated files.
+- `GET /ai/runs/{run_id}/download`: Download generated project code as a `.zip` file.

@@ -1,25 +1,48 @@
-import os
-from fastapi import FastAPI
-from dotenv import load_dotenv
+"""Main FastAPI entrypoint for Project 2 Enterprise AI Agent Backend."""
+from fastapi import FastAPI, Security
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import APIKeyHeader
 
-load_dotenv()
+from modules.ai_agent.router import ai_agent_router
+
+# Setup API Key authentication header
+api_key_header = APIKeyHeader(name="X-API-KEY", auto_error=False)
 
 app = FastAPI(
-    title="Enterprise AI Agent API",
-    description="Multi-agent orchestrator powered by LangGraph Supervisor",
+    title="Project 2: Enterprise AI Multi-Agent Backend",
+    description="Autonomous software development team with Supervisor, Planner, Developer, Reviewer and PostgreSQL memory",
     version="0.1.0",
+    dependencies=[Security(api_key_header)],
 )
 
-@app.get("/")
-def health_check():
-    return {"status": "ok", "service": "enterprise-ai-agent"}
+# CORS configuration
+origins = [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:3000",
+]
 
-@app.get("/info")
-def get_info():
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Register routes
+app.include_router(ai_agent_router)
+
+
+@app.get("/", tags=["Health"])
+def health_check():
+    """Health check endpoint."""
     return {
-        "model": os.getenv("OPENAI_MODEL", "gpt-4o"),
-        "status": "ready"
+        "status": "online",
+        "service": "Project 2 Enterprise AI Agent Backend",
+        "docs": "/docs",
     }
+
 
 if __name__ == "__main__":
     import uvicorn

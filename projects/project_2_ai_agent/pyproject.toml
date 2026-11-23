@@ -1,19 +1,23 @@
 [project]
 name = "project-2-ai-agent"
 version = "0.1.0"
-description = "Add your description here"
+description = "Enterprise Autonomous AI Software Development Team"
 readme = "README.md"
 authors = [
     { name = "khan1020", email = "afzalkhanrind92@gmail.com" }
 ]
-requires-python = ">=3.13"
+requires-python = ">=3.11"
 dependencies = [
-    "fastapi[standard]>=0.165.0",
+    "fastapi[standard]>=0.115.0",
+    "sqlmodel>=0.0.22",
+    "psycopg[binary]>=3.2.0",
+    "langchain-core>=0.3.0",
+    "langchain-openai>=0.2.0",
+    "langgraph>=0.2.0",
+    "langgraph-supervisor>=0.0.31",
+    "pydantic-settings>=2.0.0",
+    "python-dotenv>=1.0.0",
 ]
 
 [project.scripts]
-project-2-ai-agent = "project_2_ai_agent:main"
-
-[build-system]
-requires = ["uv_build>=0.13.8,<0.14.0"]
-build-backend = "uv_build"
+project-2-ai-agent = "main:app"
