@@ -24,7 +24,8 @@ class Run(SQLModel, table=True):
 
 @cache  # connects on first use, so the offline tests never need a database
 def engine():
-    url = os.getenv("DATABASE_URL") #.replace("postgresql://", "postgresql+psycopg://", 1)
+    raw_url = os.getenv("DATABASE_URL") or "postgresql+psycopg://postgres:postgres@localhost:9000/postgres"
+    url = raw_url.replace("postgresql://", "postgresql+psycopg://", 1)
     e = create_engine(url)
     SQLModel.metadata.create_all(e)  # creates the runs table if it doesn't exist
     return e

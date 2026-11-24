@@ -5,7 +5,7 @@ from fastapi import HTTPException
 from sqlmodel import Session
 
 from core.database.postgres import Run, engine
-from modules.ai_agent.graph import build_team
+from modules.ai_team.graph import build_team
 
 _team = None
 
