@@ -16,5 +16,5 @@ ashrei-tech = "ashrei_tech:main"
 [tool.uv.workspace]
 members = [
     "projects/project_2_ai_agent",
-    "projects/project_2_ai_agent/project",
+    "projects/AI-Development-Team/Langraph_Development_Team_Class",
 ]
