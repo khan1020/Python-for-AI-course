@@ -1,0 +1,10 @@
+.env
+node_modules
+.venv
+.next
+.taste-skill
+docs
+AI Development Team
+Langraph_Development_Team
+.vscode
+Test
