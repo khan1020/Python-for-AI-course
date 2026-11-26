@@ -9,7 +9,7 @@ from sqlmodel import Session
 
 from core.database.postgres import Run, engine
 from modules.ai_team.graph import build_team
-
+from langfuse.langchain import CallbackHandler # type: ignore
 
 _team = None
 log = logging.getLogger(__name__)
@@ -75,10 +75,15 @@ def prepare(message, parent_id=None):
            files = dict(parent.files)   # a copy: the parent's snapshot never changes
            messages = [("user", parent.message), ("assistant", parent.answer)]
 
-
    messages.append(("user", message))
-   config = {"configurable": {"files": files}, "recursion_limit": 60}
-   return messages, files, config
+   handler = CallbackHandler()
+   config = {
+        "configurable": {"files": files},
+        "recursion_limit": 60,
+        "callbacks": [handler],
+        "run_name": "ai-development-team"
+   }
+   return messages, files, config, handler
 
 
 
@@ -97,9 +102,15 @@ def save(message, parent_id, files, result):
 
 
 def chat(message, parent_id=None):
-   messages, files, config = prepare(message, parent_id)
-   result = get_team().invoke({"messages": messages}, config)   # no session open during the slow AI call
-   return save(message, parent_id, files, result)
+   messages, files, config, handler = prepare(message, parent_id)
+   try:
+       result = get_team().invoke({"messages": messages}, config)   # no session open during the slow AI call
+       return save(message, parent_id, files, result)
+   finally:
+       try:
+           handler._langfuse_client.flush()
+       except Exception:
+           pass
 
 
 
@@ -127,8 +138,7 @@ def progress(ns, task):
 
 def chat_stream(message, parent_id=None):
    # runs before the response starts, so a missing parent is still a real 404
-   messages, files, config = prepare(message, parent_id)
-
+   messages, files, config, handler = prepare(message, parent_id)
 
    def events():
        try:
@@ -144,7 +154,11 @@ def chat_stream(message, parent_id=None):
        except Exception:   # the 200 status is already sent, so report failure as an event
            log.exception("Streaming run failed")
            yield {"type": "error", "error": "The team couldn\u2019t finish this run. Check the FastAPI logs."}
-
+       finally:
+           try:
+               handler._langfuse_client.flush()
+           except Exception:
+               pass
 
    return events()
 
