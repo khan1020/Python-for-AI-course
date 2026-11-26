@@ -8,6 +8,7 @@ from sqlmodel import Session
 
 
 from core.database.postgres import Run, engine
+from core.mcp import load_mcp_tools
 from modules.ai_team.graph import build_team
 from langfuse.langchain import CallbackHandler # type: ignore
 
@@ -17,10 +18,15 @@ log = logging.getLogger(__name__)
 
 
 
-def get_team():
+async def get_team():
    global _team   # built on the first request, so the server can start without a model key
    if _team is None:
-       _team = build_team()
+       try:
+           docs_tools = await load_mcp_tools()
+       except : 
+           log.warning("\n*** Unable to load tools...***\n")
+           docs_tools = []
+       _team = build_team(docs_tools=docs_tools)
    return _team
 
 

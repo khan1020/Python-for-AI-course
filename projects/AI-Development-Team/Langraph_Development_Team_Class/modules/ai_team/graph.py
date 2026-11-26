@@ -4,7 +4,7 @@ import os
 
 from langchain.agents import create_agent
 from langchain_openai import ChatOpenAI
-from langgraph.graph import END, START, MessagesState, StateGraph
+from langgraph.graph import END, START, MessagesState, StateGraph # type: ignore
 
 
 from core import settings  # noqa: F401  (loads .env)
@@ -46,9 +46,9 @@ def create_chat_model(llm=None):
 
 
 
-def build_team(model=None):
+def build_team(model=None, docs_tools=()):
    model = model or create_chat_model()
-   planner_tools = [list_files, read_file] + ([web_search] if os.getenv("TAVILY_API_KEY") else [])
+   planner_tools = [list_files, read_file,  *docs_tools] +  ([web_search] if os.getenv("TAVILY_API_KEY") else []) 
 
 
    planner = create_agent(
