@@ -4,7 +4,7 @@ import os
 
 from langchain.agents import create_agent
 from langchain_openai import ChatOpenAI
-from langgraph_supervisor import create_supervisor
+from langgraph.graph import END, START, MessagesState, StateGraph
 
 
 from core import settings  # noqa: F401  (loads .env)
@@ -24,14 +24,24 @@ LLMS = {
        base_url="https://api.groq.com/openai/v1",
        api_key=os.getenv("GROQ_API_KEY"),
        model=os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")),
+   "openrouter": dict(
+       base_url="https://openrouter.ai/api/v1",
+       api_key=os.getenv("OPENROUTER_API_KEY"),
+       model=os.getenv("OPENROUTER_MODEL", "openrouter/free")),
 }
 
 
 
 
-def create_chat_model(llm="groq"):
+def create_chat_model(llm=None):
    # max_retries: free tiers hit tokens-per-minute limits; this waits them out
-   return ChatOpenAI(**LLMS[llm], temperature=0, max_retries=6)
+   llm = llm or os.getenv("LLM_PROVIDER", "openrouter")
+   return ChatOpenAI(
+       **LLMS[llm],
+       temperature=0,
+       max_retries=6,
+       max_tokens=int(os.getenv("MAX_OUTPUT_TOKENS", "4096")),
+   )
 
 
 
@@ -51,8 +61,10 @@ def build_team(model=None):
    developer = create_agent(
        model, [list_files, read_file, write_file], name="developer",
        system_prompt=("You are a Python developer. Implement the plan by saving complete files "
-                      "with write_file. If the reviewer gave feedback, fix every point. "
-                      "Reply with the files you changed. Never claim you ran the code."),
+                       "with write_file. Keep each file small (split large modules) and make "
+                       "one write_file call per file, one at a time. "
+                       "If the reviewer gave feedback, fix every point. "
+                       "Reply with the files you changed. Never claim you ran the code."),
    )
    reviewer = create_agent(
        model, [list_files, read_file], name="reviewer",
@@ -63,20 +75,29 @@ def build_team(model=None):
    )
 
 
-   return create_supervisor(
-       agents=[planner, developer, reviewer],
-       model=model,
-       prompt=(
-           "You manage a Python development team. You never write code yourself.\n"
-           "1. New request -> planner.\n"
-           "2. After a plan -> developer.\n"
-           "3. After the developer saves files -> reviewer.\n"
-           "4. CHANGES REQUESTED -> developer with the feedback.\n"
-           f"5. Stop when APPROVED, or after {MAX_DEVELOPER_PASSES} developer passes.\n"
-           "A revision request starts from the previous run's files: skip the planner if the change is small.\n"
-           "Finish with a short summary: approved or draft, files changed, open feedback."
-       ),
-   ).compile()
+   def run(agent, name):
+       def node(state: MessagesState, config):
+           before = len(state["messages"])
+           result = agent.invoke({"messages": state["messages"]}, config)
+           messages = result["messages"][before:]
+           # The summary code identifies each worker by its AI-message name.
+           messages = [
+               message.model_copy(update={"name": name})
+               if message.type == "ai" and not message.name else message
+               for message in messages
+           ]
+           return {"messages": messages}
+       return node
+
+   workflow = StateGraph(MessagesState)
+   workflow.add_node("planner", run(planner, "planner"))
+   workflow.add_node("developer", run(developer, "developer"))
+   workflow.add_node("reviewer", run(reviewer, "reviewer"))
+   workflow.add_edge(START, "planner")
+   workflow.add_edge("planner", "developer")
+   workflow.add_edge("developer", "reviewer")
+   workflow.add_edge("reviewer", END)
+   return workflow.compile()
 
 
 

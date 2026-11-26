@@ -9,6 +9,7 @@ resolution-markers = [
 [manifest]
 members = [
     "ashrei-tech",
+    "project",
     "project-2-ai-agent",
 ]
 
@@ -685,6 +686,20 @@ wheels = [
 ]
 
 [[package]]
+name = "langchain"
+version = "1.5.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "langchain-core" },
+    { name = "langgraph" },
+    { name = "pydantic" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/c7/bb/91eb9b4e4de6a1dd013148d31b2b0ce67bd8e32783ff639216263088cdd0/langchain-1.5.2.tar.gz", hash = "sha256:63816aee7f55503db5c4f266a0874047d417957ae70cbf27397325c584982c52", size = 723460, upload-time = "2026-11-18T22:30:30.058Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/57/41/dd5a3e54341c15671ab220c3f1706bd3b73c68e34bc7856782df81b873bc/langchain-1.5.2-py3-none-any.whl", hash = "sha256:e6c2df67337cae4f13b93460e586084ad8c7c7cfd540d27e2572a96308747a7c", size = 176594, upload-time = "2026-11-18T22:30:28.626Z" },
+]
+
+[[package]]
 name = "langchain-core"
 version = "1.8.4"
 source = { registry = "https://pypi.org/simple" }
@@ -1163,6 +1178,35 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/c3/75/ffb1dc0ed12352139fb4ca0e3fde4325a23e3d0f3f40efe89717bc4f557b/packaging-26.4.tar.gz", hash = "sha256:c4b671c41ddb9bf26e543c37723610d28fb6bf7affc4da17cf048d419d2c062a", size = 355877, upload-time = "2026-11-23T21:44:11.152Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ba/7b/5504f91c9c2733f693d7759e50ede5d27119d4da7e5836c46d3b5ff81d56/packaging-26.4-py3-none-any.whl", hash = "sha256:81383611a09c1bc0b08b76e0fd5829d7c6824c65b27a6aee339da133f4233ea2", size = 140049, upload-time = "2026-11-23T21:44:09.531Z" },
+]
+
+[[package]]
+name = "project"
+version = "0.1.0"
+source = { virtual = "projects/AI-Development-Team/Langraph_Development_Team_Class" }
+dependencies = [
+    { name = "fastapi", extra = ["standard"] },
+    { name = "langchain" },
+    { name = "langchain-core" },
+    { name = "langchain-openai" },
+    { name = "langgraph" },
+    { name = "langgraph-supervisor" },
+    { name = "psycopg", extra = ["binary"] },
+    { name = "python-dotenv" },
+    { name = "sqlmodel" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "fastapi", extras = ["standard"], specifier = ">=0.165.0" },
+    { name = "langchain", specifier = ">=1.5.2" },
+    { name = "langchain-core", specifier = ">=1.8.3" },
+    { name = "langchain-openai", specifier = ">=1.8.3" },
+    { name = "langgraph", specifier = ">=1.2.24" },
+    { name = "langgraph-supervisor", specifier = ">=0.0.31" },
+    { name = "psycopg", extras = ["binary"], specifier = ">=3.3.9" },
+    { name = "python-dotenv", specifier = ">=1.2.4" },
+    { name = "sqlmodel", specifier = ">=0.0.50" },
 ]
 
 [[package]]

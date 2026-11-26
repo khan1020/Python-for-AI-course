@@ -24,7 +24,13 @@ quiz
 # pattern
 *_Notes.md
 *_Explained.md
-*.env*
+# Environment files (never commit real credentials)
+.env
+.env.*
+*.env
+*.env.*
+!.env.example
+!*.env.example
 class
 company_db
 chroma*

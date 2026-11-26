@@ -1,6 +1,6 @@
 import os
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from functools import cache
 from typing import Optional
 
@@ -19,7 +19,7 @@ class Run(SQLModel, table=True):
     approved: bool
     attempts: int
     files: dict = Field(sa_column=Column(JSONB, nullable=False))
-    created_at: datetime = Field(default_factory=datetime.now)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 @cache  # connects on first use, so the offline tests never need a database
