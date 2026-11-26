@@ -6,9 +6,11 @@ __pycache__
 .venv/
 .venv
 
-# OS
+# OS & Temporary Office files
 .DS_Store
 Thumbs.db
+~$*
+*.tmp
 
 # IDE
 .vscode/
